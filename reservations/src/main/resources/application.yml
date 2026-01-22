@@ -1,6 +1,5 @@
-
 spring:
-  application.name: gateway
+  application.name: reservations
   h2:
     console:
       enabled: true
@@ -13,4 +12,4 @@ spring:
       hibernate:
         format_sql: true
 server:
-  port: 8080  port: 8082
+  port: 8082
