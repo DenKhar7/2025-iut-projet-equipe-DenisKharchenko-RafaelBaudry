@@ -6,11 +6,11 @@ import java.util.*
 data class Reservation(
     val id: UUID,
     val ownerId: Long,
-    val peoples: List<Long> = emptyList(),
-    val roomId: Long = 0,
-    val start: Long = 0,
-    val end: Long = 0,
-    val day: LocalDate = LocalDate.now()
+    val peoples: List<Long>,
+    val roomId: Long,
+    val start: Int,
+    val end: Int,
+    val day: LocalDate
 )
 
 data class Peoples(
