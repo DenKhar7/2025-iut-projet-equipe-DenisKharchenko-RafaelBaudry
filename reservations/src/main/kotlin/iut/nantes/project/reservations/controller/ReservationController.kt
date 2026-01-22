@@ -99,4 +99,13 @@ class ReservationController(private val service: ReservationService) {
             )
         }
     }
+
+    // For the BFF service
+    @GetMapping("/owner/{ownerId}")
+    fun getAllReservationsByOwnerId(
+        @RequestParam(required = false) ownerId: Long?,
+    ): ResponseEntity<List<Reservation>> {
+        val reservations = service.getAllReservationsByOwnerId(ownerId)
+        return ResponseEntity.ok(reservations)
+    }
 }

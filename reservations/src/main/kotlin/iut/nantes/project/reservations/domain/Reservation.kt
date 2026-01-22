@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.*
 
 data class Reservation(
-    val id: UUID,
+    val id: UUID? =null,
     val ownerId: Long,
     val peoples: List<Long>,
     val roomId: Long,

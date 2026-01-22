@@ -16,11 +16,10 @@ class ReservationService(
     
     fun createReservation(reservation: Reservation): Reservation {
         // Validate peoples exist
-        // TODO: Uncomment when Peoples service is ready
-//        reservation.peoples.forEach { peopleId ->
-//            checkPeopleExists(peopleId)
-//        }
-//        checkPeopleExists(reservation.ownerId)
+        reservation.peoples.forEach { peopleId ->
+            checkPeopleExists(peopleId)
+        }
+        checkPeopleExists(reservation.ownerId)
         
         // Validate room exists
         checkRoomExists(reservation.roomId)
@@ -73,10 +72,9 @@ class ReservationService(
         val existing = repository.findById(id).orElse(null) ?: return null
         
         // Validate peoples exist
-        // TODO: Uncomment when Peoples service is ready
-//        reservation.peoples.forEach { peopleId ->
-//            checkPeopleExists(peopleId)
-//        }
+        reservation.peoples.forEach { peopleId ->
+            checkPeopleExists(peopleId)
+        }
         
         // Validate room exists
         checkRoomExists(reservation.roomId)
@@ -148,4 +146,15 @@ class ReservationService(
         end = entity.end,
         day = entity.day
     )
+
+    // For the BFF service:
+    fun getAllReservationsByOwnerId(ownerId: Long?): List<Reservation> {
+        val entities = when {
+            ownerId != null ->
+                repository.findByOwnerId(ownerId)
+            else ->
+                repository.findAll()
+        }
+        return entities.map { toReservation(it) }
+    }
 }
