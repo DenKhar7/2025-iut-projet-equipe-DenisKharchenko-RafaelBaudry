@@ -1,3 +1,9 @@
+== Membres du PROJET (BUT3 Groupe 2-2) : 
+- Rafael BAUDRY
+- Denis KHARCHENKO
+
+Branche principal - main
+
 == Rendu
 
 Le projet doit être rendu sous la forme d'un repository (GitLab ou GitHub).
