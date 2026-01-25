@@ -4,18 +4,18 @@ class HashPeopleDatabase : PeopleDatabase {
     private val peoples = mutableMapOf<Long, People>()
     private val addresses = mutableMapOf<Long, Address>()
 
-    private var peopleIdGenerator:Long=0
-    private var addressIdGenerator:Long=0
+    private var peopleIdGenerator:Long=1
+    private var addressIdGenerator:Long=1
 
     override fun save(people: People): People {
         val addressToSave = people.address
         val finalAddress = if (addressToSave.addressId == 0L) {
-            val newAddrId = addressIdGenerator
-            addressIdGenerator++
+            val newAddrId = addressIdGenerator++
             val savedAddr = addressToSave.copy(addressId = newAddrId)
             addresses[newAddrId] = savedAddr
             savedAddr
         } else {
+            addresses[addressToSave.addressId] = addressToSave
             addressToSave
         }
 
