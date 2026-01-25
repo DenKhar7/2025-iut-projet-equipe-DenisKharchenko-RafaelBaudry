@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class CompletePeopleService(
+class AggregationService(
     private val peopleClient: PeopleClient,
     private val reservationClient: ReservationClient,
     private val roomClient: RoomClient
@@ -50,17 +50,18 @@ class CompletePeopleService(
     }
 
     fun getPeopleWithReservation(id: Long): PeopleWithReservationDTO {
-        val p = peopleClient.getPeopleById(id)
 
-        val reservationsDtos = reservationClient.getReservationsByOwner(id)
+        val people = peopleClient.getPeopleById(id)
+
+        val reservations = reservationClient.getReservationsByOwner(id)
 
         return PeopleWithReservationDTO(
-            id = p.id,
-            firstName = p.firstName,
-            lastName = p.lastName,
-            age = p.age,
-            address = p.address,
-            reservations = reservationsDtos.map { it.id.toString() }
+            id = people.id,
+            firstName = people.firstName,
+            lastName = people.lastName,
+            age = people.age,
+            address = people.address,
+            reservations = reservations.map { it.id.toString() }
         )
     }
 }

@@ -6,6 +6,8 @@ import iut.nantes.project.reservations.exception.InvalidReservationException
 import iut.nantes.project.reservations.exception.ReservationConflictException
 import iut.nantes.project.reservations.repository.ReservationRepository
 import org.springframework.stereotype.Service
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.reactive.function.client.WebClient
 import java.time.LocalDate
 import java.util.*
@@ -116,8 +118,12 @@ class ReservationService(
     }
     
     private fun checkPeopleExists(peopleId: Long) {
+        val requestAttributes = RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes
+        val currentUser = requestAttributes?.request?.getHeader("X-User") ?: "ADMIN"
+
         val exists = webClient.get()
             .uri("http://localhost:8081/api/v1/peoples/{id}", peopleId)
+            .header("X-User", currentUser)
             .retrieve()
             .toBodilessEntity()
             .block()

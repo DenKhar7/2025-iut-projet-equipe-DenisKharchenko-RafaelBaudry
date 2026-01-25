@@ -1,12 +1,15 @@
 package iut.nantes.project.peoples.repository
 
-class JpaPeopleDatabase(
+import jakarta.transaction.Transactional
+
+open class JpaPeopleDatabase(
     private val peopleRepository: PeopleRepository,
     private val addressRepository: AddressRepository
 ) : PeopleDatabase {
 
     override fun save(people: People): People = peopleRepository.save(people)
 
+    @Transactional
     override fun deleteById(id: Long): Long = peopleRepository.removeById(id)
 
     override fun findById(id: Long): People? = peopleRepository.findById(id).orElse(null)

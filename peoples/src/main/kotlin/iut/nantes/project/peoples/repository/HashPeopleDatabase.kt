@@ -34,9 +34,9 @@ class HashPeopleDatabase : PeopleDatabase {
     }
 
     override fun deleteById(id: Long) :Long {
-        val peoplesTemp = peoples
+        val peoplesSize = peoples.size
         peoples.remove(id)
-        return (peoplesTemp.size-peoples.size).toLong()
+        return (peoplesSize-peoples.size).toLong()
     }
 
     override fun findById(id: Long): People? {

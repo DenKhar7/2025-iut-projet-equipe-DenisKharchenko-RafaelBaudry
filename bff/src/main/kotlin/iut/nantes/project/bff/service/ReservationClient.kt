@@ -1,33 +1,30 @@
 package iut.nantes.project.bff.service
 
 import iut.nantes.project.bff.domain.ReservationDTO
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
-import java.util.UUID
+import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @Service
 class ReservationClient(
-    private val reservationRestClient: RestClient
+    @Qualifier("reservationRestClient") private val restClient: RestClient
 ) {
     fun getReservationById(id: UUID): ReservationDTO {
-        val username = SecurityContextHolder.getContext().authentication.name
-
-        return reservationRestClient
-            .get()
+        return restClient.get()
             .uri("/api/v1/reservations/{id}", id)
-            .header("X-User", username)
             .retrieve()
+            .onStatus({ it.is4xxClientError }) { _, response ->
+                throw ResponseStatusException(response.statusCode, "Erreur service Reservation")
+            }
             .body(ReservationDTO::class.java)!!
     }
 
     fun getReservationsByOwner(ownerId: Long): List<ReservationDTO> {
-        val username = SecurityContextHolder.getContext().authentication.name
-
-        return reservationRestClient.get()
-            .uri("/api/v1/reservations/owner/{ownerId}", ownerId)
-            .header("X-User", username)
+        return restClient.get()
+            .uri("/api/v1/reservations?ownerId={id}", ownerId)
             .retrieve()
             .body(object : ParameterizedTypeReference<List<ReservationDTO>>() {})
             ?: emptyList()
