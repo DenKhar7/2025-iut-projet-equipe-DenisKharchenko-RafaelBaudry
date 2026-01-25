@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.provisioning.JdbcUserDetailsManager
 import org.springframework.security.provisioning.UserDetailsManager
 import javax.sql.DataSource
@@ -40,6 +41,17 @@ class SecurityConfig {
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
+    // In-mem User pour tester en local
+    @Bean
+    @ConditionalOnProperty(name = ["bff.security"], havingValue = "inmemory")
+    fun inMemoryUserDetails(passwordEncoder: PasswordEncoder): UserDetailsManager {
+        val admin = User.withUsername("ADMIN")
+            .password(passwordEncoder.encode("ADMIN"))
+            .roles("ADMIN")
+            .build()
+        return InMemoryUserDetailsManager(admin)
+    }
+    
     @Bean
     @ConditionalOnProperty(name = ["bff.security"], havingValue = "database", matchIfMissing = true)
     fun jdbcUserDetails(dataSource: DataSource): UserDetailsManager {

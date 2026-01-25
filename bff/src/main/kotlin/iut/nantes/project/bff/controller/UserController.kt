@@ -23,7 +23,7 @@ class BffController(
 
     @PostMapping("/api/v1/user")
     fun createUser(@RequestBody dto: UserDTO): ResponseEntity<Void> {
-        val isCreated = userService.createUser(dto.login, dto.password)
+        val isCreated = userService.createUser(dto.login, dto.password, dto.isAdmin)
 
         return if (isCreated) {
             ResponseEntity.status(HttpStatus.CREATED).build()

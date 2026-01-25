@@ -28,5 +28,6 @@ data class AddressDTO(
     val city: String,
     @field:Pattern(regexp = "^\\d{5}$")
     val zipCode: String,
+    @field:Size(min = 2, max = 50)
     val country: String
 )

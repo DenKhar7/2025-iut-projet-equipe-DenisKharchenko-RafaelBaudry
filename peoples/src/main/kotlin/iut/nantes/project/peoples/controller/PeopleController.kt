@@ -1,5 +1,6 @@
 package iut.nantes.project.peoples.controller
 
+import iut.nantes.project.peoples.exception.PeopleNotFoundException
 import iut.nantes.project.peoples.repository.Address
 import iut.nantes.project.peoples.repository.People
 import iut.nantes.project.peoples.repository.PeopleDTO
@@ -37,12 +38,9 @@ class PeopleController(private val peopleService: PeopleService) {
     @GetMapping("/api/v1/peoples/{id}")
     fun findById(@PathVariable id: Long) : ResponseEntity<People> {
         val people = peopleService.findPeopleById(id)
-            ?: return ResponseEntity.notFound().build()
+            ?: throw PeopleNotFoundException("People with id: $id not found")
 
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(people
-            )
+        return ResponseEntity.ok(people)
     }
 
     @PutMapping("/api/v1/peoples/{id}")
@@ -52,19 +50,16 @@ class PeopleController(private val peopleService: PeopleService) {
     ): ResponseEntity<People> {
         val peopleEntity = dtoToEntity(peopleDTO)
         val updated = peopleService.updatePeople(id, peopleEntity)
-        return if (updated != null) {
-            ResponseEntity.ok(updated)
-        } else {
-            ResponseEntity.notFound().build()
-        }
+            ?: throw PeopleNotFoundException("People with id: $id not found")
+        return ResponseEntity.ok(updated)
     }
 
     @DeleteMapping("/api/v1/peoples/{id}")
-    fun deletePeople(@PathVariable id: Long): ResponseEntity<People> {
-        return if (peopleService.deletePeople(id)){
-            ResponseEntity.status(204)
-                .build()
-        } else ResponseEntity.notFound().build()
+    fun deletePeople(@PathVariable id: Long): ResponseEntity<Void> {
+        if (!peopleService.deletePeople(id)) {
+            throw PeopleNotFoundException("People with id: $id not found")
+        }
+        return ResponseEntity.status(204).build()
     }
 
     private fun dtoToEntity(dto: PeopleDTO): People {

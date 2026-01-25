@@ -10,6 +10,7 @@ import iut.nantes.project.peoples.service.PeopleService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class PeopleConfig {
@@ -30,7 +31,7 @@ class PeopleConfig {
     }
 
     @Bean
-    fun peopleService(database: PeopleDatabase)= PeopleService(database)
+    fun peopleService(database: PeopleDatabase, webClient: WebClient?) = PeopleService(database, webClient)
 
     @Bean
     fun peopleController(peopleService: PeopleService) = PeopleController(peopleService)

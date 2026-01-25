@@ -11,14 +11,16 @@ class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    fun createUser(username: String, rawPassword: String): Boolean {
+    fun createUser(username: String, rawPassword: String, isAdmin: Boolean = false): Boolean {
         if (userDetailsManager.userExists(username)) {
             return false
         }
 
+        val role = if (isAdmin) "ADMIN" else "USER"
+        
         val newUser = User.withUsername(username)
             .password(passwordEncoder.encode(rawPassword))
-            .roles("USER")
+            .roles(role)
             .build()
 
         userDetailsManager.createUser(newUser)

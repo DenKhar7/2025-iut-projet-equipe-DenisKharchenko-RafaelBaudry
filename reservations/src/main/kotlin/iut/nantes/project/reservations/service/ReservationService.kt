@@ -2,6 +2,8 @@ package iut.nantes.project.reservations.service
 
 import iut.nantes.project.reservations.domain.Reservation
 import iut.nantes.project.reservations.entity.ReservationEntity
+import iut.nantes.project.reservations.exception.InvalidReservationException
+import iut.nantes.project.reservations.exception.ReservationConflictException
 import iut.nantes.project.reservations.repository.ReservationRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -32,7 +34,7 @@ class ReservationService(
             reservation.end
         )
         if (conflicts.isNotEmpty()) {
-            throw RuntimeException("Room is already reserved for this time slot")
+            throw ReservationConflictException("Room is already reserved for this time slot")
         }
         
         val entity = ReservationEntity(
@@ -88,15 +90,17 @@ class ReservationService(
         ).filter { it.id != id }
         
         if (conflicts.isNotEmpty()) {
-            throw RuntimeException("Room is already reserved for this time slot")
+            throw ReservationConflictException("Room is already reserved for this time slot")
         }
         
+        // Update without changing ownerId (preserve original owner)
         val updated = existing.copy(
             peoples = reservation.peoples,
             roomId = reservation.roomId,
             start = reservation.start,
             end = reservation.end,
             day = reservation.day
+            // Note: ownerId is NOT updated - preserved from existing
         )
         
         val saved = repository.save(updated)
@@ -120,7 +124,7 @@ class ReservationService(
             ?.statusCode?.is2xxSuccessful ?: false
         
         if (!exists) {
-            throw RuntimeException("People with id $peopleId not found")
+            throw InvalidReservationException("People with id $peopleId not found")
         }
     }
     
@@ -133,7 +137,7 @@ class ReservationService(
             ?.statusCode?.is2xxSuccessful ?: false
         
         if (!exists) {
-            throw RuntimeException("Room with id $roomId not found")
+            throw InvalidReservationException("Room with id $roomId not found")
         }
     }
     
@@ -156,5 +160,9 @@ class ReservationService(
                 repository.findAll()
         }
         return entities.map { toReservation(it) }
+    }
+    
+    fun deleteReservationsByOwnerId(ownerId: Long) {
+        repository.deleteByOwnerId(ownerId)
     }
 }
